@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\SellerRequestController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductImageController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -36,6 +38,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::middleware(['auth', 'customer'])->group(function () {
     Route::get('/seller-request', [SellerRequestController::class, 'index'])->name('seller-request.index');
     Route::post('/seller-request', [SellerRequestController::class, 'store'])->name('seller-request.store');
+});
+
+
+
+
+Route::middleware(['auth', 'role:seller'])->group(function () {
+    Route::resource('products', ProductController::class);
+    Route::delete('/product-images/{id}', [ProductImageController::class, 'destroy'])->name('product-images.destroy');
 });
 
 
