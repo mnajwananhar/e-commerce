@@ -49,4 +49,33 @@ class SellerRequestController extends Controller
 
         return redirect()->route('seller-request.index')->with('success', 'Pengajuan seller berhasil dikirim.');
     }
+
+    public function adminIndex()
+    {
+        $requests = SellerRequest::where('status', 'pending')->get();
+
+        return view('admin.seller-requests.index', compact('requests'));
+    }
+
+    public function approve($id)
+    {
+        $request = SellerRequest::findOrFail($id);
+        $request->update([
+            'status' => 'approved',
+            'approved_at' => now(),
+            'approved_by' => Auth::id(),
+        ]);
+
+        $request->user->update(['role' => 'seller']); // Ubah role user jadi seller
+
+        return redirect()->route('admin.seller-requests.index')->with('success', 'Pengajuan seller disetujui.');
+    }
+
+    public function reject($id)
+    {
+        $request = SellerRequest::findOrFail($id);
+        $request->update(['status' => 'rejected']);
+
+        return redirect()->route('admin.seller-requests.index')->with('success', 'Pengajuan seller ditolak.');
+    }
 }

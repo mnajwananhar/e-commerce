@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\SellerRequestController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,6 +23,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/seller-request', [SellerRequestController::class, 'index'])->name('seller-request.index');
+    Route::post('/seller-request', [SellerRequestController::class, 'store'])->name('seller-request.store');
 });
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/seller-requests', [SellerRequestController::class, 'adminIndex'])->name('admin.seller-requests.index');
+    Route::post('/admin/seller-requests/{id}/approve', [SellerRequestController::class, 'approve'])->name('admin.seller-requests.approve');
+    Route::post('/admin/seller-requests/{id}/reject', [SellerRequestController::class, 'reject'])->name('admin.seller-requests.reject');
+});
+
 
 require __DIR__ . '/auth.php';
