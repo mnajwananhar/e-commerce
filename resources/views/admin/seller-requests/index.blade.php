@@ -1,52 +1,78 @@
 <x-app-layout>
-    <div class="max-w-7xl mx-auto p-6 bg-white shadow rounded-lg">
-        <h2 class="text-xl font-bold mb-4">Daftar Pengajuan Role Seller</h2>
+    <div class="max-w-7xl mx-auto p-6 bg-gray-50">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Daftar Pengajuan Role Seller</h2>
 
         @if (session('success'))
-            <div class="p-4 mb-4 text-green-700 bg-green-100 rounded-lg">
+            <div class="mb-6 p-4 text-green-700 bg-green-100 border border-green-300 rounded-lg">
                 {{ session('success') }}
             </div>
         @endif
 
-        <table class="min-w-full border-collapse border border-gray-300">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="border border-gray-300 px-4 py-2">Nama Lengkap</th>
-                    <th class="border border-gray-300 px-4 py-2">Nama Toko</th>
-                    <th class="border border-gray-300 px-4 py-2">NIK</th>
-                    <th class="border border-gray-300 px-4 py-2">Status</th>
-                    <th class="border border-gray-300 px-4 py-2">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($requests as $request)
+        <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100">
                     <tr>
-                        <td class="border border-gray-300 px-4 py-2">{{ $request->full_name }}</td>
-                        <td class="border border-gray-300 px-4 py-2">{{ $request->store_name }}</td>
-                        <td class="border border-gray-300 px-4 py-2">{{ $request->nik }}</td>
-                        <td class="border border-gray-300 px-4 py-2">
-                            <span
-                                class="px-2 py-1 text-sm font-semibold rounded-md {{ $request->status === 'pending' ? 'bg-yellow-100 text-yellow-600' : ($request->status === 'approved' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600') }}">
-                                {{ ucfirst($request->status) }}
-                            </span>
-                        </td>
-                        <td class="border border-gray-300 px-4 py-2">
-                            <form method="POST" action="{{ route('admin.seller-requests.approve', $request->id) }}"
-                                class="inline">
-                                @csrf
-                                <button type="submit"
-                                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none">Setujui</button>
-                            </form>
-                            <form method="POST" action="{{ route('admin.seller-requests.reject', $request->id) }}"
-                                class="inline">
-                                @csrf
-                                <button type="submit"
-                                    class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none">Tolak</button>
-                            </form>
-                        </td>
+                        <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-gray-700">Nama Lengkap</th>
+                        <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-gray-700">Nama Toko</th>
+                        <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-gray-700">NIK</th>
+                        <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-gray-700">Nomor HP</th>
+                        <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-gray-700">Alamat</th>
+                        <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-gray-700">Foto KTP</th>
+                        <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-gray-700">Foto Selfie
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-sm font-medium text-gray-700">Aksi</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                    @forelse($requests as $request)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 text-sm text-gray-800 font-medium">{{ $request->full_name }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">{{ $request->store_name }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">{{ $request->nik }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">{{ $request->phone }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">{{ $request->address }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">
+                                <a href="{{ asset('storage/' . $request->ktp_photo) }}" target="_blank">
+                                    <img src="{{ asset('storage/' . $request->ktp_photo) }}" alt="Foto KTP"
+                                        class="w-20 h-20 object-cover rounded-md shadow-md border">
+                                </a>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-700">
+                                <a href="{{ asset('storage/' . $request->selfie_photo) }}" target="_blank">
+                                    <img src="{{ asset('storage/' . $request->selfie_photo) }}" alt="Foto Selfie"
+                                        class="w-20 h-20 object-cover rounded-md shadow-md border">
+                                </a>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-700">
+                                <div class="flex space-x-2">
+                                    <form method="POST"
+                                        action="{{ route('admin.seller-requests.approve', $request->id) }}">
+                                        @csrf
+                                        <button type="submit"
+                                            class="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500">
+                                            Setujui
+                                        </button>
+                                    </form>
+                                    <form method="POST"
+                                        action="{{ route('admin.seller-requests.reject', $request->id) }}">
+                                        @csrf
+                                        <button type="submit"
+                                            class="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-md hover:bg-red-700 focus:ring-2 focus:ring-red-500">
+                                            Tolak
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">
+                                Tidak ada pengajuan yang tersedia.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 </x-app-layout>
